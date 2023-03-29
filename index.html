@@ -17,8 +17,8 @@
     <div class="row">
       <div class="col-md-4">
         <div class="list-group">
-          <a href="#" class="list-group-item list-group-item-action pb-0" 
-            v-for="item in product" @click="selectedProduct(item)" :class="{'active': tempSelected.name == item.name}">
+          <a href="#" class="list-group-item list-group-item-action pb-0" v-for="item in product"
+            @click="selectedProduct(item)" :class="{'active': tempSelected.name == item.name}">
             <p>{{ item.name }}</p>
             <div class="d-flex justify-content-between">
               <p>{{ item.engName }}</p>
@@ -32,13 +32,14 @@
           <div class="card-body">
             <div class="mb-3">
               <label for="" class="form-label">數量</label>
-              <input type="number" class="form-control" id="" value="1">
+              <input type="number" class="form-control" id="" value="1" v-model="tempSelected.count">
             </div>
             <div class="mb-3">
               <label for="" class="d-block">冰塊*</label>
               <div class="form-check form-check-inline" v-for="item in iceType">
-                <input class="form-check-input" type="radio" name="icetype" id="" :value="item" 
-                  v-model="tempSelected.ice" :disabled="!tempSelected.hasOwnProperty('defaults')  || (tempSelected.defaults.ice !== '' &&  tempSelected.defaults.ice !=item)">
+                <input class="form-check-input" type="radio" name="icetype" id="" :value="item"
+                  v-model="tempSelected.ice"
+                  :disabled="!tempSelected.hasOwnProperty('defaults')  || (tempSelected.defaults.ice !== '' &&  tempSelected.defaults.ice !=item)">
                 <label class="form-check-label" for="">{{ item }}</label>
               </div>
             </div>
@@ -46,7 +47,8 @@
               <label for="" class="d-block">甜度*</label>
               <div class="form-check form-check-inline" v-for="item in sugarType">
                 <input class="form-check-input" type="radio" name="sugartype" id="" :value="item"
-                v-model="tempSelected.sugar" :disabled="!tempSelected.hasOwnProperty('defaults')  || (tempSelected.defaults.sugar !== '' &&  tempSelected.defaults.sugar !=item)">
+                  v-model="tempSelected.sugar"
+                  :disabled="!tempSelected.hasOwnProperty('defaults')  || (tempSelected.defaults.sugar !== '' &&  tempSelected.defaults.sugar !=item)">
                 <label class="form-check-label" for="">{{ item }}</label>
               </div>
             </div>
@@ -54,7 +56,8 @@
               <label for="" class="d-block">加料*</label>
               <div class="form-check form-check-inline" v-for="item in toppingsType">
                 <input class="form-check-input" type="checkbox" id="" name="toppingstype" :value="item"
-                v-model="tempSelected.toppings" :disabled="!tempSelected.hasOwnProperty('defaults')  || tempSelected.defaults.toppings.includes(item)">
+                  v-model="tempSelected.toppings"
+                  :disabled="!tempSelected.hasOwnProperty('defaults')  || tempSelected.defaults.toppings.includes(item)">
                 <label class="form-check-label" for="">{{ item }}</label>
               </div>
             </div>
@@ -64,7 +67,7 @@
             </div>
             <div class="d-flex">
               <button class="btn btn-outline-success w-50 me-1">取消</button>
-              <button class="btn btn-success w-50">加入</button>
+              <button class="btn btn-success w-50" @click="addToOrder(tempSelected)">加入</button>
             </div>
           </div>
         </div>
@@ -83,14 +86,14 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
+                <tr v-for="(item, key) in orderList">
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.ice }}</td>
+                  <td>{{ item.sugar }}</td>
+                  <td>{{ item.toppings.toString() }}</td>
+                  <td>{{ item.price }}</td>
+                  <td>{{ item.count }}</td>
+                  <td>{{ item.total }}</td>
                 </tr>
               </tbody>
             </table>
@@ -144,6 +147,7 @@
     const App = {
       data() {
         return {
+          orderList: [],
           tempSelected: {},
           iceType: ['正常冰', '少冰', '微冰', '去冰', '熱'],
           sugarType: ['全糖', '七分', '半糖', '三分', '無糖'],
@@ -187,11 +191,20 @@
           this.tempSelected = {
             count: '1',
             ice: product.defaults.ice !== "" ? product.defaults.ice : '正常冰',
-            sugar: product.defaults.sugar !=="" ? product.defaults.sugar : '全糖',
+            sugar: product.defaults.sugar !== "" ? product.defaults.sugar : '全糖',
             toppings: [],
             notices: '',
             ...product
           }
+        },
+        addToOrder(product) {
+          this.orderList.push(
+            {
+              ...product,
+              total: (product.price + product.toppings.length * 10) * product.count
+            }
+          );
+          this.tempSelected = {}
         }
       },
     }
