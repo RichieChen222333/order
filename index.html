@@ -204,7 +204,8 @@
           }
         },
         addToOrder(product) {
-          this.orderList.push(
+          const vm = this;
+          vm.orderList.push(
             {
               ...product,
               total: (product.price + product.toppings.length * 10) * product.count
@@ -228,7 +229,7 @@
         },
         reset() {
           this.tempSelected = {};
-          this.orderList = {};
+          this.orderList = [];
         }
       },
     }
