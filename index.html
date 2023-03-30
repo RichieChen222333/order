@@ -30,6 +30,7 @@
       <div class="col-md-8">
         <div class="card">
           <div class="card-body">
+            <div v-if="!tempSelected.name" class="text-white d-flex align-items-center  justify-content-center h1" style="position: absolute;top: 0;bottom: 0;left: 0;right: 0;background-color: rgba(0,0,0,0.2); z-index: 100;">先選擇飲品</div>
             <div class="mb-3">
               <label for="" class="form-label">數量</label>
               <input type="number" class="form-control" id="" value="1" v-model="tempSelected.count">
@@ -71,7 +72,7 @@
             </div>
           </div>
         </div>
-        <div class="card mt-3">
+        <div class="card mt-3" v-if="orderList.length > 0">
           <div class="card-body">
             <table class="table">
               <thead>
@@ -97,7 +98,7 @@
                 </tr>
               </tbody>
             </table>
-            <button class="btn btn-secondary w-100">產生訂單</button>
+            <button class="btn btn-secondary w-100" @click="generateOrder()">產生訂單</button>
           </div>
         </div>
       </div>
@@ -119,21 +120,21 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
-                  <td>00</td>
+                <tr v-for="(item, key) in checkOrder.orders">
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.ice }}</td>
+                  <td>{{ item.sugar }}</td>
+                  <td>{{ item.toppings.toString() }}</td>
+                  <td>{{ item.price }}</td>
+                  <td>{{ item.count }}</td>
+                  <td>{{ item.total }}</td>
                 </tr>
               </tbody>
             </table>
-            <p>訂單產生時間: XXXXX</p>
-            <p>餐點數: XXXX</p>
+            <p>訂單產生時間: {{ checkOrder.time }}</p>
+            <p>餐點數: {{ checkOrder.orders.length }}</p>
             <p>付款狀態: 未付款</p>
-            <p class="text-end mb-0">共: NT$XXX元</p>
+            <p class="text-end mb-0">共: NT${{ checkOrder.total }}元</p>
           </div>
         </div>
       </div>
@@ -147,6 +148,11 @@
     const App = {
       data() {
         return {
+          checkOrder: {
+            time: '',
+            total: 0,
+            orders: []
+          },
           orderList: [],
           tempSelected: {},
           iceType: ['正常冰', '少冰', '微冰', '去冰', '熱'],
@@ -205,6 +211,24 @@
             }
           );
           this.tempSelected = {}
+        },
+        generateOrder() {
+          this.countTotal();
+          const time = new Date().toLocaleString();
+          this.checkOrder.time = time;
+          this.checkOrder.orders = this.orderList;
+          this.reset();
+        },
+        countTotal() {
+          let total = 0;
+          this.orderList.forEach((item) => {
+            total = total + item.total;
+          });
+          this.checkOrder.total = total;
+        },
+        reset() {
+          this.tempSelected = {};
+          this.orderList = {};
         }
       },
     }
