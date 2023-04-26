@@ -193,7 +193,6 @@
             vm.temp = {
               Toppings: [],
             }
-            vm.getdata();
           } else {
             //更新
             console.log("更新!");
@@ -213,8 +212,8 @@
             vm.temp = {
               Toppings: [],
             }
-            vm.getdata();
           }
+          vm.getdata();
           vm.isNew = false;
         },
         deleteItem(item) {
